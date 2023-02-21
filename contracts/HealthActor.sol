@@ -51,7 +51,7 @@ contract HealthActor is HealthCenter {
     }
 
     function checkHealthActor(uint _id, address _address)  view public returns (uint) {
-        uint index = 0;
+        uint index = 1;
         for (index; index <= actorCount ; index++){
             if (actors[index].id == _id || actors[index].addr == _address){
                 return index;
@@ -62,7 +62,7 @@ contract HealthActor is HealthCenter {
 
     function getActorID(address _address) view public returns (uint) {
         uint index = checkHealthActor(0, _address);
-        require(index>0, "Actor does not exist !!");
+        require(index>0, string(abi.encodePacked("Actor does not exist !!",_address)));
 
         return actors[index].id;
     }

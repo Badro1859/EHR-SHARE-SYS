@@ -130,7 +130,7 @@ contract Patient {
 
         // check if patient exist 
         (uint index, bool exist) = checkPatient(_patientID, address(0));
-        require(exist, "patient does not exist !!");
+        require(exist, "Patient does not exist !!");
 
         patients[index].ehr.setRequest(actorID,  _requestType);
 

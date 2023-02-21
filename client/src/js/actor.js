@@ -51,18 +51,18 @@ App = {
       App.account = web3.eth.accounts[0];
       web3.eth.defaultAccount = App.account;
   
-      console.log("your account : ", App.account)
+    //   console.log("your account : ", App.account)
     },
   
     loadContract: async () => {
         // Create a JavaScript version of the smart contract
-        const actor = await $.getJSON('HealthActor.json')
-        App.contracts.Actor = TruffleContract(actor)
-        App.contracts.Actor.setProvider(App.web3Provider)
+        const pat = await $.getJSON('Patient.json')
+        App.contracts.Patient = TruffleContract(pat)
+        App.contracts.Patient.setProvider(App.web3Provider)
 
         // Hydrate the smart contract with values from the blockchain
-        App.actor = await App.contracts.Actor.deployed()
-        console.log(App.actor)
+        App.patient = await App.contracts.Patient.deployed()
+        // console.log(App.patient)
     },
 
 
@@ -86,7 +86,11 @@ App = {
 
     sendRequest: async () => {
         const patientID = $('#inputPatient').val();
-        const type = $('');
+        const type = $('input[name=flexRadioDefault]:checked', '#reqForm').val(); // PUBLISH: 0, CONSULT: 1
+        console.log(patientID, type)
+
+        await App.patient.sendRequest(patientID, type);
+        window.location.reload();
     },
 
     shareEHR: async () => {

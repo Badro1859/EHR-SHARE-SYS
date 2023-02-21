@@ -41,7 +41,7 @@ App = {
       App.web3Provider = window.ethereum;
       window.web3 = new Web3(ethereum);
 
-      // console.log("create web3 obj succeflly :", window.web3)
+      console.log("create web3 obj succeflly :", window.web3)
     }
     else if (window.web3) {
       // Legacy dapp browsers...
@@ -59,7 +59,7 @@ App = {
     App.account = web3.eth.accounts[0];
     web3.eth.defaultAccount = App.account;
 
-    // console.log("your account : ", App.account)
+    console.log("your account : ", App.account)
   },
 
   loadContract: async () => {
@@ -82,13 +82,13 @@ App = {
     $('#account').html(App.account);
 
     // Render Authority Accounts
-    // await App.renderAuthList();
+    await App.renderAuthList();
 
     // Render Centers Accounts
-    // await App.renderCenters();
+    await App.renderCenters();
 
     // Render Actors Accounts
-    // await App.renderActors();
+    await App.renderActors();
 
     // Render Actors Accounts
     await App.renderPatients();
@@ -168,14 +168,13 @@ App = {
   renderCenters: async () => {
     // Load the total authority count from the blockchain
     const centerCount = await App.actor.getNumberOfCenters();
-    // console.log("number of centers : ", centerCount.toNumber());
     const $centerRow = $('.centerRow');
     
     // Render out each authority with a new task templateol
     for (var i = 0; i < centerCount.toNumber(); i++) {
       // Fetch the authority address from the blockchain
       const cent = await App.actor.getCenterByIndex(i);
-      // console.log("center ", i, cent)
+
       // Create the html for the authority
       const $newCenterRow = $centerRow.clone()
 
@@ -215,14 +214,13 @@ App = {
   renderActors: async () => {
     // Load the total authority count from the blockchain
     const actorCount = await App.actor.actorCount();
-    console.log("number of actors : ", actorCount.toNumber());
     const $actorRow = $('.actorRow');
     
     // Render out each authority with a new task templateol
     for (var i = 1; i <= actorCount.toNumber(); i++) {
       // Fetch the authority address from the blockchain
       const actor = await App.actor.actors(i);
-      console.log("center ", i, actor)
+
       // Create the html for the authority
       const $newActorRow = $actorRow.clone()
 
@@ -276,14 +274,12 @@ App = {
   renderPatients: async () => {
     // Load the total authority count from the blockchain
     const patientCount = await App.patient.getNumberOfPatient();
-    // console.log("number of patients : ", patientCount.toNumber());
     const $patientRow = $('.patientRow');
     
     // Render out each authority with a new task templateol
     for (var i = 0; i < patientCount.toNumber(); i++) {
       // Fetch the authority address from the blockchain
       const patient = await App.patient.getPatientByIndex(i);
-      // console.log("center ", i, patient)
 
       // Create the html for the authority
       const $newPatientRow = $patientRow.clone()
