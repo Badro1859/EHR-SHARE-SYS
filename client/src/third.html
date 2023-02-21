@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>EHR Share System | Beta version</title>
+
+    <!-- Bootstrap -->
+    <link href="vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-2 shadow">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" 
+        href="#" 
+        target="_blank">
+        Patient |
+      </a>
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap d-none d-sm-none d-sm-block">
+          <small><a class="nav-link" href="#"><span id="account"></span></a></small>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="container-fluid justify-content-center py-5">
+      <!-- ********************** Consult EHR ********************** -->
+      <div class="row px-5 mt-5">
+        <h3>EHR abstract</h3><hr>
+               
+        <div class="px-5">
+          <table class="table table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Identifier</th>
+                <th scope="col">ActorID</th>
+                <th scope="col">Type</th>
+                <th scope="col">Hash</th>
+                <th scope="col">IPFS address</th>
+                <th scope="col">Secret Key</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="row m-3 px-4">
+          <button class="btn btn-primary col-sm-1">show more</button>
+        </div>
+        <hr>
+      </div>
+
+      <!-- ********************** Consult EHR ********************** -->
+      <div class="row px-5 mt-5">
+        <h3>All Requests</h3><hr>
+               
+        <div class="px-5">
+          <table class="table table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Identifier</th>
+                <th scope="col">ActorID</th>
+                <th scope="col">Type</th>
+                <th scope="col">Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-success inline mx-2">Accept</button>
+                  <button type="button" class="btn btn-danger btn-sm inline mx-2">Refuse</button>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>Mark</td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-success inline mx-2">Accept</button>
+                  <button type="button" class="btn btn-danger btn-sm inline mx-2">Refuse</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr>
+      </div>
+    </main>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Vendor -->
+    <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>    
+    <script src="vendor/web3/dist/web3.js"></script>
+    <script src="vendor/truffle-contract/dist/truffle-contract.js"></script> 
+
+    <!-- Custom -->
+    <script src="app.js"></script>
+  </body>
+</html>
