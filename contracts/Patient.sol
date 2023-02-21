@@ -33,6 +33,8 @@ contract Patient {
     constructor(address authorityAddress, address actorAddress){
         authority = HealthAuthority(authorityAddress);
         actor = HealthActor(actorAddress);
+
+        patients.push(patient(20, 'badro', address(0xB09E8efD21A77Ee5FfDc5Aa3f70fcC22E3e060C6), new EHR()));
     }
 
 
@@ -90,16 +92,16 @@ contract Patient {
      * @dev Response to a request from associated patient.
      * @param _requestID the request id 
      */
-    // function AuthorizationResponse(uint _requestID, bool _response) public {
-    //     // check if this is trusted patient 
-    //     (uint index, bool exist) = checkPatient(0, msg.sender);
-    //     require(exist, "you are not a patient, permission denied !!");
+    function setResponse(uint _requestID) public {
+        // check if this is trusted patient 
+        (uint index, bool exist) = checkPatient(0, msg.sender);
+        require(exist, "you are not a patient, permission denied !!");
 
-    //     // response to request 
-    //     patients[index].ehr.setResponse(_requestID, _response);
+        // response to request 
+        patients[index].ehr.setResponse(_requestID);
 
-    //     // event to actor
-    // }
+        // event to actor 
+    }
 
     // function getEHRbyOwner(uint _ehrID, bool _lastOne) view public returns (EHR.EHRAbstract memory, uint){
     //     (uint index, bool exist) = checkPatient(0, msg.sender);
@@ -120,9 +122,24 @@ contract Patient {
     * ///////////////////////////////////////////////////////////////////////
     */
 
+    function getNumberOfRequest() public view returns (uint256) {
+        (uint index, bool exist) = checkPatient(0, msg.sender);
+        require(exist, "You are not a patient !!");
+        
+        return patients[index].ehr.getNumberOfRequest();
+    }
+
+    function getRequestByIndex(uint256 _requestID) public view returns (uint, EHR.RequestType, bool){
+        (uint index, bool exist) = checkPatient(0, msg.sender);
+        require(exist, "You are not a patient !!");
+        
+        return patients[index].ehr.getRequestByIndex(_requestID);
+    }
+
     /** 
      * @dev Create a new request from an actor.
-     * @param _patientID and the request type and ehrID
+     * @param _patientID this is a patient id
+     * @param _requestType the type of request CONSULT PUBLISH
      */
     function sendRequest(uint _patientID, EHR.RequestType _requestType) public returns (uint){
         // check if caller is actor

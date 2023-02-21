@@ -13,9 +13,7 @@ contract EHR {
     }
 
     struct request {
-        // uint id; index in the array of request
         uint actorID;
-        // uint ehrID;
         RequestType rType;
         bool accepted;
         uint ReadyTime;
@@ -75,7 +73,7 @@ contract EHR {
         return (exist, accepted);
     }
 
-    function setResponse(uint _requestID, bool response) public {
+    function setResponse(uint _requestID) public {
         (bool exist, bool accepted) = checkRequest(_requestID);
         require(exist, "Request does not exist !!");
 

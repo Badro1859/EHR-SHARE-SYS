@@ -29,9 +29,9 @@ App = {
 
   //////////////////// WEB3 PURPOSES ////////////////////
   load: async () => {
-    await App.loadWeb3()
-    await App.loadAccount()
-    await App.loadContract()
+    await App.loadWeb3();
+    await App.loadAccount();
+    await App.loadContract();
     await App.render();
   },
 
@@ -41,7 +41,7 @@ App = {
       App.web3Provider = window.ethereum;
       window.web3 = new Web3(ethereum);
 
-      console.log("create web3 obj succeflly :", window.web3)
+      // console.log("create web3 obj succeflly :", window.web3)
     }
     else if (window.web3) {
       // Legacy dapp browsers...
@@ -59,7 +59,7 @@ App = {
     App.account = web3.eth.accounts[0];
     web3.eth.defaultAccount = App.account;
 
-    console.log("your account : ", App.account)
+    // console.log("your account : ", App.account)
   },
 
   loadContract: async () => {

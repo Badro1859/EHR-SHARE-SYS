@@ -29,7 +29,7 @@
         Patient |
       </a>
       <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap d-none d-sm-none d-sm-block">
+        <li class="nav-item">
           <small><a class="nav-link" href="#"><span id="account"></span></a></small>
         </li>
       </ul>
@@ -75,10 +75,6 @@
             </tbody>
           </table>
         </div>
-
-        <div class="row m-3 px-4">
-          <button class="btn btn-primary col-sm-1">show more</button>
-        </div>
         <hr>
       </div>
 
@@ -90,32 +86,19 @@
           <table class="table table-striped">
             <thead class="table-dark">
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">Identifier</th>
                 <th scope="col">ActorID</th>
                 <th scope="col">Type</th>
                 <th scope="col">Response</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
+            <tbody id="reqList">
+              <tr class="reqRow template">
+                <th class="reqIndex" scope="row">1</th>
+                <td class="reqActor">Mark</td>
+                <td class="reqType">Mark</td>
                 <td>
                   <button type="button" class="btn btn-sm btn-success inline mx-2">Accept</button>
-                  <button type="button" class="btn btn-danger btn-sm inline mx-2">Refuse</button>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>
-                  <button type="button" class="btn btn-sm btn-success inline mx-2">Accept</button>
-                  <button type="button" class="btn btn-danger btn-sm inline mx-2">Refuse</button>
                 </td>
               </tr>
             </tbody>
@@ -135,6 +118,6 @@
     <script src="vendor/truffle-contract/dist/truffle-contract.js"></script> 
 
     <!-- Custom -->
-    <script src="app.js"></script>
+    <script src="js/patient.js"></script>
   </body>
 </html>

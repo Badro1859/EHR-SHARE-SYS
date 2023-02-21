@@ -65,7 +65,8 @@ App = {
         // console.log(App.patient)
     },
 
-
+    // 0x6158ca8d2F4D51a88207C87c495E31079cb01c02
+    // 0x6158ca8d2F4D51a88207C87c495E31079cb01c02
   
     ////////// MAKE CHANGE IN HTML PAGE
     render: async () => {
@@ -85,12 +86,12 @@ App = {
     },
 
     sendRequest: async () => {
-        const patientID = $('#inputPatient').val();
-        const type = $('input[name=flexRadioDefault]:checked', '#reqForm').val(); // PUBLISH: 0, CONSULT: 1
-        console.log(patientID, type)
+      const patientID = $('#inputPatient').val();
+      const type = $('input[name=flexRadioDefault]:checked', '#reqForm').val(); // PUBLISH: 0, CONSULT: 1
+      console.log(patientID, type)
 
-        await App.patient.sendRequest(patientID, type);
-        window.location.reload();
+      await App.patient.sendRequest(patientID, type);
+      window.location.reload();
     },
 
     shareEHR: async () => {
