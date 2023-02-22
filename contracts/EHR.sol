@@ -28,15 +28,21 @@ contract EHR {
     struct EHRAbstract {
         // uint id; index in the array of EHRAbstract
         uint actorID;
-        EHRType eType;
-        string hash;
+        // EHRType eType;
+        string ehrHash;
         string ipfsHashAddress;
         string secretKey;
         // uint date; // TODO
     }
-    EHRAbstract[] ehrArray;
+    // EHRAbstract[] ehrArray;
+    mapping(uint256 => EHRAbstract) public ehrArray;
+    uint256 public ehrCount = 0;
 
     
+    constructor () {
+        ehrCount++;
+        ehrArray[ehrCount] = EHRAbstract(0, "test", "test", "test");
+    }
 
 
     /**
@@ -88,25 +94,31 @@ contract EHR {
     * /////////////////////////////////////////////////////////
     */
 
-    // function addEHRAbstract(uint _requestID, uint _actorID, EHRType _type, string memory _hash, string memory _ipfsAddr, string memory _secretKey ) public returns (uint _ehrID) {
+    ////////////////////// FOR OWNER
+    function getEHRAbstract(uint _ehrID) view public returns (EHRAbstract memory) {
+        require(_ehrID > 0 && _ehrID <= ehrCount, "EHR does not exist !!");
 
-    //     // 1 - check the request 
-    //     (bool exist, bool accepted) = checkRequest(_requestID);
-    //     require(exist && accepted, "Request does not exist or does not accepted !!");
+        return ehrArray[_ehrID];
+    } 
 
-    //     // 2 - check if actor is the same in the request 
-    //     require(requests[_requestID].actorID == _actorID, "permission denied !!");
+    ////////////////////// FOR ACTOR
+    function addEHRAbstract(uint _requestID, uint _actorID, string memory _hash, string memory _ipfsAddr, string memory _secretKey ) public returns (uint _ehrID) {
 
-    //     // 3 - check the type of request (publish)
-    //     require(requests[_requestID].rType == RequestType.PUBLISH, "permission denied !!");
+        // 1 - check the request 
+        (bool exist, bool accepted) = checkRequest(_requestID);
+        require(exist && accepted, "Request does not exist or does not accepted !!");
+
+        // 2 - check if actor is the same in the request 
+        require(requests[_requestID].actorID == _actorID, "permission denied !!");
+
+        // 3 - check the type of request (publish)
+        require(requests[_requestID].rType == RequestType.PUBLISH, "permission denied !!");
 
 
-    //     // share the EHR
-    //     _ehrID = ehrArray.length;
-    //     ehrArray.push(EHRAbstract(_actorID, _type, _hash, _ipfsAddr, _secretKey));
-
-    //     return _ehrID;
-    // }
+        // share the EHR
+        ehrCount++;
+        ehrArray[ehrCount] = EHRAbstract(_actorID, _hash, _ipfsAddr, _secretKey);
+    }
 
     // function checkEHR(uint _ehrID) view public returns (bool) {
     //     if (ehrArray.length > _ehrID){
@@ -115,28 +127,19 @@ contract EHR {
     //     return false;
     // }
 
-    // function getEHRAbstract(uint _ehrID) view public returns (EHRAbstract memory) {
-    //     require(checkEHR(_ehrID), "EHR does not exist !!");
 
-    //     return ehrArray[_ehrID];
-    // } 
+    function getEHRbyActor(uint _requestID, uint _actorID, uint _ehrID) view public returns (EHRAbstract memory) {
+        // 1 - check the request 
+        (bool exist, bool accepted) = checkRequest(_requestID);
+        require(exist && accepted, "Request does not exist or does not accepted !!");
 
-    // function getLastEHR() view public returns (EHRAbstract memory, uint _ehrID) {
-    //     require(ehrArray.length > 0, "not exist any EHR !!");
+        // 2 - check if the same actor 
+        require(requests[_requestID].actorID == _actorID, "permission denied !!");
 
-    //     _ehrID = ehrArray.length -1;
-    //     return (ehrArray[_ehrID], _ehrID);
-    // }
+        // 3 - check the type of request (consult)
+        require(requests[_requestID].rType == RequestType.CONSULT, "permission denied !!");
 
-    // function getEHRbyActor(uint _requestID, uint _actorID) view public returns (EHRAbstract memory) {
-    //     // 1 - check the request 
-    //     (bool exist, bool accepted) = checkRequest(_requestID);
-    //     require(exist && accepted, "Request does not exist or does not accepted !!");
-
-    //     // 2 - check if the same actor 
-    //     require(requests[_requestID].actorID == _actorID, "permission denied !!");
-
-    //     return ehrArray[requests[_requestID].ehrID];
-    // }
+        return getEHRAbstract(_ehrID);
+    }
     
 }

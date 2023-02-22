@@ -86,28 +86,40 @@
               <h3>Share EHR abstract</h3><hr>
 
               <div class="col-12 px-5">
-                  <form action="#" onSubmit="App.shareEHR(); return false;">
-                    <div class="row mb-3">
-                      <label for="inputHash" class="col-6 col-form-label h6">Hash of EHR</label>
-                      <div class="col-6">
-                        <input type="text" class="form-control" id="inputHash">
-                      </div>
+                <form action="#" onSubmit="App.shareEHR(); return false;">
+                  <div class="row mb-3">
+                    <label for="inputPatID" class="col-6 col-form-label h6">Patient ID</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="inputPatID">
                     </div>
-                    <div class="row mb-3">
-                      <label for="inputipfs" class="col-6 col-form-label h6">IPFS hash address</label>
-                      <div class="col-6">
-                        <input type="text" class="form-control" id="inputipfs">
-                      </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="inputReqID" class="col-6 col-form-label h6">Reqeust ID</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="inputReqID">
                     </div>
-                    <div class="row mb-3">
-                      <label for="inputSecKey" class="col-6 col-form-label h6">Secret key</label>
-                      <div class="col-6">
-                        <input type="text" class="form-control" id="inputSecKey">
-                      </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="inputHash" class="col-6 col-form-label h6">Hash of EHR</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="inputHash">
                     </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="inputipfs" class="col-6 col-form-label h6">IPFS hash address</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="inputipfs">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <label for="inputSecKey" class="col-6 col-form-label h6">Secret key</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="inputSecKey">
+                    </div>
+                  </div>
 
-                    <input class="btn btn-success mt-3" type="submit" value="submit">
-                  </form>
+                  <input class="btn btn-success mt-3" type="submit" value="submit">
+                </form>
               </div>
               <hr>
             </div>
@@ -117,12 +129,18 @@
               <h3>Consult EHR abstract</h3><hr>
 
               
-              <form action="#" class="px-5">
+              <form action="#" onSubmit="App.consultEHR(); return false;" class="px-5">
                 <div class="row mb-3">
                   <label for="inputpat" class="col-2 col-form-label h6 px-5">Patient ID</label>
                   <div class="col-6">
                     <input type="text" class="form-control" id="inputpat">
                   </div>
+
+                  <label for="inputreq" class="col-2 col-form-label h6 px-5">Request ID</label>
+                  <div class="col-6">
+                    <input type="text" class="form-control" id="inputreq">
+                  </div>
+
                   <div class="col-4">
                     <input class="btn btn-success" type="submit" value="submit">
                   </div>
@@ -133,40 +151,23 @@
                 <table class="table table-striped">
                   <thead class="table-dark">
                     <tr>
-                      <th scope="col">#</th>
                       <th scope="col">Identifier</th>
                       <th scope="col">ActorID</th>
-                      <th scope="col">Type</th>
                       <th scope="col">Hash</th>
                       <th scope="col">IPFS address</th>
                       <th scope="col">Secret Key</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
-                      <td>Mark</td>
+                  <tbody id="ehrList">
+                    <tr class="ehrRow template">
+                      <th class="ehrID" scope="row">1</th>
+                      <td class="ehrActor">Mark</td>
+                      <td class="ehrHash">Mark</td>
+                      <td class="ehrIPFS">Mark</td>
+                      <td class="ehrSecKey">Mark</td>
                     </tr>
                   </tbody>
                 </table>
-              </div>
-
-              <div class="row m-3 px-4">
-                <button class="btn btn-primary col-sm-1">show more</button>
               </div>
               <hr>
             </div>

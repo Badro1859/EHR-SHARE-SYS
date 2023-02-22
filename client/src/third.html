@@ -36,7 +36,7 @@
     </nav>
 
     <main class="container-fluid justify-content-center py-5">
-      <!-- ********************** Consult EHR ********************** -->
+      <!-- ********************** SHOW EHR ********************** -->
       <div class="row px-5 mt-5">
         <h3>EHR abstract</h3><hr>
                
@@ -44,33 +44,20 @@
           <table class="table table-striped">
             <thead class="table-dark">
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">Identifier</th>
                 <th scope="col">ActorID</th>
-                <th scope="col">Type</th>
                 <th scope="col">Hash</th>
                 <th scope="col">IPFS address</th>
                 <th scope="col">Secret Key</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
-                <td>Mark</td>
+            <tbody id="ehrList">
+              <tr class="ehrRow template">
+                <th class="ehrID" scope="row">1</th>
+                <td class="ehrActor">Mark</td>
+                <td class="ehrHash">Mark</td>
+                <td class="ehrIPFS">Mark</td>
+                <td class="ehrSecKey">Mark</td>
               </tr>
             </tbody>
           </table>
@@ -78,7 +65,7 @@
         <hr>
       </div>
 
-      <!-- ********************** Consult EHR ********************** -->
+      <!-- ********************** Show REQUEST ********************** -->
       <div class="row px-5 mt-5">
         <h3>All Requests</h3><hr>
                
@@ -108,6 +95,8 @@
       </div>
     </main>
 
+
+    
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     

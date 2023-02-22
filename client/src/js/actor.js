@@ -65,8 +65,6 @@ App = {
         // console.log(App.patient)
     },
 
-    // 0x6158ca8d2F4D51a88207C87c495E31079cb01c02
-    // 0x6158ca8d2F4D51a88207C87c495E31079cb01c02
   
     ////////// MAKE CHANGE IN HTML PAGE
     render: async () => {
@@ -95,10 +93,45 @@ App = {
     },
 
     shareEHR: async () => {
+      const patID = $('#inputPatID').val();
+      const reqID = $('#inputReqID').val();
+      const hash = $('#inputHash').val();
+      const ipfs = $('#inputipfs').val();
+      const secret = $('#inputSecKey').val();
 
+      await App.patient.shareEHR(patID, reqID, hash, ipfs, secret);
+      window.location.reload();
     },
 
     consultEHR: async () => {
+      const patID = $('#inputpat').val();
+      const reqID = $('#inputreq').val();
+
+      // Load the total ehr count from the blockchain
+      const ehrCount = await App.patient.getNbOfEHRByActor(patID);
+      const $ehrRow = $('.ehrRow');
+      
+      // Render out each request with a new task template
+      for (var i = 1; i <= ehrCount.toNumber(); i++) {
+        // Fetch the authority address from the blockchain
+        const ehr = await App.patient.getEHRbyActor(patID, reqID, i);
+
+        // Create the html for the authority
+        const $newEhrRow = $ehrRow.clone()
+
+        $newEhrRow.find('.ehrID').html(i);
+        $newEhrRow.find('.ehrActor').html(ehr[0].toNumber());
+        $newEhrRow.find('.ehrHash').html(ehr[1]);
+        $newEhrRow.find('.ehrIPFS').html(ehr[2]);
+        $newEhrRow.find('.ehrSecKey').html(ehr[3]);
+
+
+        // Put the authority in the list
+        $('#ehrList').append($newEhrRow)
+
+        // Show the task
+        $newEhrRow.show()
+      }
 
     }
 }
