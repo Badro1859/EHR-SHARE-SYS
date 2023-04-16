@@ -21,6 +21,8 @@ contract Patient {
         string name;
         address addr;
         EHR ehr;
+        // string public_key;
+        // string private_key;
     }
     patient[] patients;
 
@@ -113,12 +115,43 @@ contract Patient {
         return patients[index].ehr.getRequestByIndex(_requestID);
     }
 
+    function char(bytes1 b) internal pure returns (bytes1 c) {
+        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
+        else return bytes1(uint8(b) + 0x57);
+    }
+
+    function toAsciiString(address x) internal pure returns (string memory) {
+        bytes memory s = new bytes(40);
+        for (uint i = 0; i < 20; i++) {
+            bytes1 b = bytes1(uint8(uint(uint160(x)) / (2**(8*(19 - i)))));
+            bytes1 hi = bytes1(uint8(b) / 16);
+            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
+            s[2*i] = char(hi);
+            s[2*i+1] = char(lo);            
+        }
+        return string(s);
+    }
+
+    // for actor utilization
+    function verifyAuthorization(uint _patientID) public view returns (bool, uint) {
+
+        (uint index, bool exist) = checkPatient(_patientID, address(0x0));
+        require(exist, "This patient does not exist !! ");
+
+        uint actor_id = actor.getActorID(msg.sender);
+        
+        return patients[index].ehr.checkResponse(actor_id);
+    }
+
+
+
     /** 
      * @dev Create a new request from an actor.
      * @param _patientID this is a patient id
      * @param _requestType the type of request CONSULT PUBLISH
      */
     function sendRequest(uint _patientID, EHR.RequestType _requestType) public returns (uint){
+
         // check if caller is actor
         uint actorID = actor.getActorID(msg.sender);
 

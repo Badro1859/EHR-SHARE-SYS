@@ -15,6 +15,8 @@ contract HealthActor is HealthCenter {
         uint centerID;
         string name;
         address addr;
+        // string public_key;
+        // string private_key;
     }
     //actor[] actors;
 
@@ -25,6 +27,7 @@ contract HealthActor is HealthCenter {
 
         actorCount++;
         actors[actorCount] = actor(23, 11, 'badro', address(0x6158ca8d2F4D51a88207C87c495E31079cb01c02));
+        actors[actorCount] = actor(25, 11, 'ahmed', address(0x87C8Ea2F6EF914766609df6C776e65b191F97EF8));
     }
 
     
@@ -57,7 +60,7 @@ contract HealthActor is HealthCenter {
     // function to show if an actor exist
     // exist : return index of actor
     // n'exist pas : return 0
-    function checkHealthActor(uint _id, address _address)  view public returns (uint) {
+    function checkHealthActor(uint _id, address _address) view public returns (uint) {
         uint index = 1;
         for (index; index <= actorCount; index++){
             if (actors[index].id == _id || actors[index].addr == _address){
@@ -67,9 +70,28 @@ contract HealthActor is HealthCenter {
         return 0;
     }
 
+    function char(bytes1 b) internal pure returns (bytes1 c) {
+        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
+        else return bytes1(uint8(b) + 0x57);
+    }
+
+    function toAsciiString(address x) internal pure returns (string memory) {
+        bytes memory s = new bytes(40);
+        for (uint i = 0; i < 20; i++) {
+            bytes1 b = bytes1(uint8(uint(uint160(x)) / (2**(8*(19 - i)))));
+            bytes1 hi = bytes1(uint8(b) / 16);
+            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
+            s[2*i] = char(hi);
+            s[2*i+1] = char(lo);            
+        }
+        return string(s);
+    }
+
+    
+
     function getActorID(address _address) view public returns (uint) {
         uint index = checkHealthActor(0, _address);
-        require(index>0, string(abi.encodePacked("Actor does not exist !!",_address)));
+        require(index>0, string(abi.encodePacked("Actor does not exist !!",toAsciiString(_address))));
 
         return actors[index].id;
     }

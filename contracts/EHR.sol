@@ -16,7 +16,7 @@ contract EHR {
         uint actorID;
         RequestType rType;
         bool accepted;
-        uint ReadyTime;
+        uint readyTime;
     }
     request[] requests;
 
@@ -42,6 +42,8 @@ contract EHR {
     constructor () {
         ehrCount++;
         ehrArray[ehrCount] = EHRAbstract(0, "test", "test", "test");
+
+        requests.push(request(23, RequestType.CONSULT, true, 0));
     }
 
 
@@ -50,6 +52,8 @@ contract EHR {
     *           PUBLIC METHODS FOR REQUEST PURPOSE 
     * /////////////////////////////////////////////////////////
     */
+
+    // #### for patient utilization ###
     function getNumberOfRequest() public view returns (uint) {
         return requests.length;
     }
@@ -59,6 +63,15 @@ contract EHR {
         return (requests[_index].actorID, requests[_index].rType, requests[_index].accepted);
     }
 
+    function setResponse(uint _requestID) public {
+        (bool exist, bool accepted) = checkRequest(_requestID);
+        require(exist, "Request does not exist !!");
+
+        requests[_requestID].accepted = true;
+        // TODO: readyTime
+    }
+
+    // ### for actor utilization ###
     function setRequest(uint _actorID, RequestType _type) public returns (uint){
         uint index = requests.length;
         bool accepted = false;
@@ -68,6 +81,23 @@ contract EHR {
         return index;
     }
 
+    function checkResponse(uint _actorID) public view returns (bool, uint) {
+        uint requestID = 0;
+        uint i = requests.length;
+        for (i; i>0; i--) {
+            if (requests[i-1].actorID == _actorID) {
+                if (requests[i-1].readyTime == 0) {
+                    return (requests[i-1].accepted, i-1); 
+                }
+                else {
+                    return (false, requestID);
+                }
+            }
+        }
+        return (false, requestID);
+    }
+
+    // ### for internal utilization ###
     function checkRequest(uint _requestID) view public returns (bool, bool) {
         bool exist = false;
         bool accepted = false;
@@ -79,13 +109,7 @@ contract EHR {
         return (exist, accepted);
     }
 
-    function setResponse(uint _requestID) public {
-        (bool exist, bool accepted) = checkRequest(_requestID);
-        require(exist, "Request does not exist !!");
-
-        requests[_requestID].accepted = true;
-        // TODO: readyTime
-    }
+    
 
 
     /**

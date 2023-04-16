@@ -141,6 +141,7 @@ App = {
   addAuthority: async () => {
     App.setLoading(true)
     const content = $('#newAuthority').val();
+    window.alert(content);
     await App.authority.addAccount(content);
     window.location.reload()
   },
