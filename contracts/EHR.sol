@@ -6,17 +6,24 @@ pragma solidity >=0.7.0 <0.9.0;
  * @dev Implements EHR methods
  */
 contract EHR {
+    // request expired time in second
+    uint256 constant EXPIRED_TIME = 86400;
 
     enum RequestType {
         PUBLISH,
         CONSULT
     }
-
+    enum RequestState {
+        ACCEPTED,
+        REFUSED,
+        PENDING,
+        CANCELLED
+    }
     struct request {
         uint actorID;
+        uint256 timestamp;
         RequestType rType;
-        bool accepted;
-        uint readyTime;
+        RequestState state;        
     }
     request[] requests;
 
@@ -24,7 +31,6 @@ contract EHR {
         examen,
         SCANNER
     }
-
     struct EHRAbstract {
         // uint id; index in the array of EHRAbstract
         uint actorID;
@@ -41,9 +47,10 @@ contract EHR {
     
     constructor () {
         ehrCount++;
-        ehrArray[ehrCount] = EHRAbstract(0, "test", "test", "test");
+        ehrArray[ehrCount] = EHRAbstract(0, "test", "Hello world", "test");
 
-        requests.push(request(23, RequestType.CONSULT, true, 0));
+        requests.push(request(23, block.timestamp, RequestType.CONSULT, RequestState.PENDING));
+        // requests.push(request(25, block.timestamp, RequestType.CONSULT, RequestState.ACCEPTED));
     }
 
 
@@ -52,61 +59,71 @@ contract EHR {
     *           PUBLIC METHODS FOR REQUEST PURPOSE 
     * /////////////////////////////////////////////////////////
     */
+    
+    function checkExpiredRequests() internal {
+        for (uint i=0; i<requests.length;i++)
+        if (requests[i].state == RequestState.PENDING) {
+            uint256 currentTimestamp = block.timestamp;
+            uint256 timeDifference = currentTimestamp - requests[i].timestamp;
+            if (timeDifference > EXPIRED_TIME){
+                requests[i].state = RequestState.CANCELLED;
+            }
+        }
+    }
 
     // #### for patient utilization ###
     function getNumberOfRequest() public view returns (uint) {
+        // checkExpiredRequests();
         return requests.length;
     }
 
-    function getRequestByIndex(uint _index) public view returns (uint, RequestType, bool) {
+    function getRequestByIndex(uint _index) public view returns (uint, uint256, RequestType, RequestState) {
         require(_index >= 0 && _index < requests.length, "WRONG INDEX FOR REQUEST !!");
-        return (requests[_index].actorID, requests[_index].rType, requests[_index].accepted);
+        return (requests[_index].actorID, requests[_index].timestamp, requests[_index].rType, requests[_index].state);
     }
 
-    function setResponse(uint _requestID) public {
-        (bool exist, bool accepted) = checkRequest(_requestID);
+    function setResponse(uint _requestID, RequestState _newState) public {
+        (bool exist, ) = checkRequest(_requestID);
         require(exist, "Request does not exist !!");
-
-        requests[_requestID].accepted = true;
-        // TODO: readyTime
+        requests[_requestID].state = _newState;
     }
 
     // ### for actor utilization ###
     function setRequest(uint _actorID, RequestType _type) public returns (uint){
         uint index = requests.length;
-        bool accepted = false;
-
-        requests.push(request(_actorID,  _type, accepted, 0));
-
+        uint256 currentTimestamp = block.timestamp;
+        requests.push(request(_actorID, currentTimestamp, _type, RequestState.PENDING));
         return index;
     }
 
-    function checkResponse(uint _actorID) public view returns (bool, uint) {
-        uint requestID = 0;
+    function checkResponse(uint _actorID) public view returns (RequestState, uint) {
+        uint256 currentTimestamp = block.timestamp;
         uint i = requests.length;
         for (i; i>0; i--) {
             if (requests[i-1].actorID == _actorID) {
-                if (requests[i-1].readyTime == 0) {
-                    return (requests[i-1].accepted, i-1); 
-                }
-                else {
-                    return (false, requestID);
+                uint256 timeDifference = currentTimestamp - requests[i-1].timestamp;
+                if (timeDifference > EXPIRED_TIME){ // CANCELLED
+                    return (RequestState.CANCELLED, 0);
+                } else {
+                    return (requests[i-1].state, i-1);
                 }
             }
         }
-        return (false, requestID);
+        return (RequestState.PENDING, 0);
     }
 
     // ### for internal utilization ###
     function checkRequest(uint _requestID) view public returns (bool, bool) {
-        bool exist = false;
-        bool accepted = false;
-        if (requests.length > _requestID) {
-            exist = true;
-            accepted = requests[_requestID].accepted;
+        uint256 currentTimestamp = block.timestamp;
+        uint256 timeDifference = currentTimestamp - requests[_requestID].timestamp;
+                
+        if (timeDifference > EXPIRED_TIME){ // CANCELLED
+            return (false, false);
         }
-
-        return (exist, accepted);
+        if (requests[_requestID].state == RequestState.ACCEPTED) {
+            return (true, true); 
+        }
+        return (true, false); // REFUSED OR PENDING
     }
 
     
@@ -121,7 +138,6 @@ contract EHR {
     ////////////////////// FOR OWNER
     function getEHRAbstract(uint _ehrID) view public returns (EHRAbstract memory) {
         require(_ehrID > 0 && _ehrID <= ehrCount, "EHR does not exist !!");
-
         return ehrArray[_ehrID];
     } 
 
@@ -142,15 +158,9 @@ contract EHR {
         // share the EHR
         ehrCount++;
         ehrArray[ehrCount] = EHRAbstract(_actorID, _hash, _ipfsAddr, _secretKey);
+
+        return ehrCount;
     }
-
-    // function checkEHR(uint _ehrID) view public returns (bool) {
-    //     if (ehrArray.length > _ehrID){
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
 
     function getEHRbyActor(uint _requestID, uint _actorID, uint _ehrID) view public returns (EHRAbstract memory) {
         // 1 - check the request 
@@ -165,5 +175,4 @@ contract EHR {
 
         return getEHRAbstract(_ehrID);
     }
-    
 }

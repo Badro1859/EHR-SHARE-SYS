@@ -22,7 +22,7 @@ contract HealthCenter {
     // array content all center
     center[] centers;
 
-    modifier isAccount() {
+    modifier onlyAuthority() {
         (uint index, bool exist) = authority.checkHealthAuthority(msg.sender);
         require(exist, "Caller have not permession");
         _;
@@ -34,23 +34,6 @@ contract HealthCenter {
 
         centers.push(center(11, 'my center', address(0x0)));
     }
-
-    function getNumberOfCenters() view public returns (uint) {
-        uint len = centers.length;
-        return len;
-    }
-
-    function getCenterByIndex(uint _index) view public returns (uint, string memory, address) {
-        require(_index>=0 && _index<centers.length, "Wrong Index !!");
-        return (centers[_index].id, centers[_index].name, centers[_index].addr); 
-    }
-    
-
-    /**
-    * ////////////////////////////////////////////////////////////
-    *           PUBLIC METHODS FOR CONTRACT INTERFACE
-    * ////////////////////////////////////////////////////////////
-    */
 
     function checkHealthCenter(uint _id, address _address)  view internal returns (uint, bool) {
         uint index = 0;
@@ -64,15 +47,32 @@ contract HealthCenter {
         }
         return (index, exist);
     }
+    
 
-    function addHealthCenter(uint _id, string memory _name, address _account) public isAccount{
-        (uint index, bool exist) = checkHealthCenter(_id, _account);
+    /**
+    * ////////////////////////////////////////////////////////////
+    *           PUBLIC METHODS FOR CONTRACT INTERFACE
+    * ////////////////////////////////////////////////////////////
+    */
+
+    function getNumberOfCenters() view public returns (uint) {
+        uint len = centers.length;
+        return len;
+    }
+
+    function getCenterByIndex(uint _index) view public returns (uint, string memory, address) {
+        require(_index>=0 && _index<centers.length, "Wrong Index !!");
+        return (centers[_index].id, centers[_index].name, centers[_index].addr); 
+    }
+
+    function addHealthCenter(uint _id, string memory _name, address _account) public onlyAuthority {
+        ( , bool exist) = checkHealthCenter(_id, _account);
         require(exist==false, "center id or account already exist !!");
 
         centers.push(center(_id, _name, _account));
     }
 
-    function rmHealthCenter(uint _id) public isAccount{
+    function rmHealthCenter(uint _id) public onlyAuthority{
         (uint index, bool exist) = checkHealthCenter(_id, address(0));
         require(exist==true, "center does not exist !!");
 

@@ -21,12 +21,11 @@ contract Patient {
         string name;
         address addr;
         EHR ehr;
-        // string public_key;
-        // string private_key;
+        string public_key;
     }
     patient[] patients;
 
-    modifier isAccount() {
+    modifier onlyAuthority() {
         (uint index, bool exist) = authority.checkHealthAuthority(msg.sender);
         require(exist, "Caller have not permession");
         _;
@@ -36,13 +35,13 @@ contract Patient {
         authority = HealthAuthority(authorityAddress);
         actor = HealthActor(actorAddress);
 
-        patients.push(patient(20, 'badro', address(0xB09E8efD21A77Ee5FfDc5Aa3f70fcC22E3e060C6), new EHR()));
+        patients.push(patient(20, 'badro', address(0x87C8Ea2F6EF914766609df6C776e65b191F97EF8), new EHR(), "public_key"));
+        // patients.push(patient(25, 'bilal', address(0xDb4454a0Ff6c7eBeAD241de2432D68648f4b2ff5), new EHR(), "public_key"));
     }
-
 
     /**
     * ///////////////////////////////////////////////////////////////////////
-    *         PUBLIC METHODS FOR REGISTRATION PURPOSE (Authority only)
+    *                       PUBLIC METHODS FOR PATIENT (GETTERS)
     * ///////////////////////////////////////////////////////////////////////
     */
     function checkPatient(uint _id, address _address) view public returns (uint, bool) {
@@ -64,96 +63,57 @@ contract Patient {
 
     function getPatientByIndex(uint _index) public view returns(uint, string memory, address) {
         require(_index >= 0 && _index < patients.length, "Wrong index!!");
-
         return (patients[_index].id, patients[_index].name, patients[_index].addr);
     }
 
-    function addPatient(uint _id, string memory _name, address _account) public isAccount{
-        (uint index, bool exist) = checkPatient(_id, _account);
-        require(exist==false, "patient id or account already exist !!");
-
-        patients.push(patient(_id, _name, _account, new EHR()));
-    }
-
-    function rmPatient(uint _id) public isAccount{
-        (uint index, bool exist) = checkPatient(_id, address(0));
-        require(exist==true, "patient does not exist !!");
-
-        patients[index] = patients[patients.length-1];
-        patients.pop();
-    }
-
-
     /**
     * ///////////////////////////////////////////////////////////////////////
-    *           PUBLIC METHODS FOR EHR PUBLISH PURPOSE (Patient only)
+    *                       PUBLIC METHODS FOR REQEUST
     * ///////////////////////////////////////////////////////////////////////
     */
-
-    
-
-    
-
-
-    /**
-    * ///////////////////////////////////////////////////////////////////////
-    *                PUBLIC METHODS FOR REQUEST PURPOSE
-    * ///////////////////////////////////////////////////////////////////////
-    */
-
+    ////////// ONLY CALL BY PATIENT //////////
     function getNumberOfRequest() public view returns (uint256) {
         (uint index, bool exist) = checkPatient(0, msg.sender);
         require(exist, "You are not a patient !!");
-        
         return patients[index].ehr.getNumberOfRequest();
     }
-
-    function getRequestByIndex(uint256 _requestID) public view returns (uint, EHR.RequestType, bool){
+    function getRequestByIndex(uint256 _requestID) public view returns (uint,uint256, EHR.RequestType, EHR.RequestState){
         (uint index, bool exist) = checkPatient(0, msg.sender);
         require(exist, "You are not a patient !!");
-        
+        // get a request : (actorID, timestamp, rType, state)
         return patients[index].ehr.getRequestByIndex(_requestID);
     }
+    /** 
+     * @dev Response to a request from associated patient.
+     * @param _requestID the request id 
+     */
+    function setResponse(uint _requestID, EHR.RequestState _newState) public {
+        // check if this is trusted patient 
+        (uint index, bool exist) = checkPatient(0, msg.sender);
+        require(exist, "you are not a patient, permission denied !!");
 
-    function char(bytes1 b) internal pure returns (bytes1 c) {
-        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
-        else return bytes1(uint8(b) + 0x57);
+        // response to request 
+        patients[index].ehr.setResponse(_requestID, _newState);
+
+        // event to actor 
     }
 
-    function toAsciiString(address x) internal pure returns (string memory) {
-        bytes memory s = new bytes(40);
-        for (uint i = 0; i < 20; i++) {
-            bytes1 b = bytes1(uint8(uint(uint160(x)) / (2**(8*(19 - i)))));
-            bytes1 hi = bytes1(uint8(b) / 16);
-            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
-            s[2*i] = char(hi);
-            s[2*i+1] = char(lo);            
-        }
-        return string(s);
-    }
-
-    // for actor utilization
-    function verifyAuthorization(uint _patientID) public view returns (bool, uint) {
-
+    ////////// ONLY CALL BY ACTOR //////////
+    function verifyAuthorization(uint _patientID) public view returns (EHR.RequestState, uint) {
         (uint index, bool exist) = checkPatient(_patientID, address(0x0));
         require(exist, "This patient does not exist !! ");
-
-        uint actor_id = actor.getActorID(msg.sender);
-        
+        // get actor id for checking respose
+        uint actor_id = actor.getActor(msg.sender).id; 
         return patients[index].ehr.checkResponse(actor_id);
     }
-
-
-
     /** 
      * @dev Create a new request from an actor.
      * @param _patientID this is a patient id
      * @param _requestType the type of request CONSULT PUBLISH
      */
-    function sendRequest(uint _patientID, EHR.RequestType _requestType) public returns (uint){
-
+    function sendRequest(uint _patientID, EHR.RequestType _requestType) public returns (bool){
         // check if caller is actor
-        uint actorID = actor.getActorID(msg.sender);
+        uint actorID = actor.getActor(msg.sender).id;
 
         // check if patient exist 
         (uint index, bool exist) = checkPatient(_patientID, address(0));
@@ -161,24 +121,9 @@ contract Patient {
 
         patients[index].ehr.setRequest(actorID,  _requestType);
 
-        // event to patient
+        //TODO: event to patient
 
-        return 0; // return the requestID
-    }
-
-    /** 
-     * @dev Response to a request from associated patient.
-     * @param _requestID the request id 
-     */
-    function setResponse(uint _requestID) public {
-        // check if this is trusted patient 
-        (uint index, bool exist) = checkPatient(0, msg.sender);
-        require(exist, "you are not a patient, permission denied !!");
-
-        // response to request 
-        patients[index].ehr.setResponse(_requestID);
-
-        // event to actor 
+        return true; // return the requestID
     }
 
 
@@ -188,25 +133,35 @@ contract Patient {
     * ///////////////////////////////////////////////////////////////////////
     */
 
-    ////////////////////// FOR OWNER (patient)
-
-    function getNbOfEHRByOwner() public view returns (uint256) {
-        (uint index, bool exist) = checkPatient(0, msg.sender);
-        require(exist, "You are not a Patient !!");
-
+    function getNbOfEHR(uint _patientID) public view returns (uint256) {
+        (uint index, bool exist) = checkPatient(_patientID, msg.sender);
+        require(exist, "This patient does not exist !!");
         return patients[index].ehr.ehrCount();
     }
 
-    function getEHRbyOwner(uint _ehrID) view public returns (uint, string memory, string memory, string memory) {
-        (uint index, bool exist) = checkPatient(0, msg.sender);
-        require(exist, "You are not a Patient !!");
+    function getEHR(uint _ehrID, uint _patientID) view public returns (uint, string memory, string memory, string memory) {      
+        //// if the caller is patient
+        (uint index, bool isPatient) = checkPatient(0, msg.sender);
+        if (isPatient) {
+            EHR.EHRAbstract memory temp1 = patients[index].ehr.getEHRAbstract(_ehrID);
+            return (temp1.actorID, temp1.ehrHash, temp1.ipfsHashAddress, temp1.secretKey);
+        }
 
-        EHR.EHRAbstract memory temp = patients[index].ehr.getEHRAbstract(_ehrID);
-        
+        //// if the caller is actor => 
+        // check if patient exist 
+        (index, isPatient) = checkPatient(_patientID, address(0));
+        require(isPatient, "patient does not exist !!");
+        // check actor
+        uint actorID = actor.getActor(msg.sender).id;
+        // check the authorization
+        (EHR.RequestState state, uint _requestID) = patients[index].ehr.checkResponse(actorID);
+        require(state==EHR.RequestState.ACCEPTED, "Permission denied !! please request patient for consulting...");
+        // get the EHR
+        EHR.EHRAbstract memory temp = patients[index].ehr.getEHRbyActor(_requestID, actorID, _ehrID);
         return (temp.actorID, temp.ehrHash, temp.ipfsHashAddress, temp.secretKey);
     }
 
-    ////////////////////// FOR REQUEST (actor)
+    /////////////// ACTOR ONLY ///////////////
 
     function shareEHR(uint _patientID, uint _requestID, string memory _hash, string memory _ipfsAddr, string memory _secretKey ) public {
         // check if patient exist 
@@ -214,30 +169,30 @@ contract Patient {
         require(exist, "patient does not exist !!");
 
         // check if actor exist and get the actor id
-        uint actorID = actor.getActorID(msg.sender);
+        uint actorID = actor.getActor(msg.sender).id;
        
         patients[index].ehr.addEHRAbstract(_requestID, actorID, _hash, _ipfsAddr, _secretKey);
     }
 
-    function getNbOfEHRByActor(uint _patientID) public view returns (uint) {
-        (uint index, bool exist) = checkPatient(_patientID, address(0));
-        require(exist, "Patient Does Not Exist!!");
 
-        return patients[index].ehr.ehrCount();
+
+    /**
+    * ///////////////////////////////////////////////////////////////////////
+    *         PUBLIC METHODS FOR REGISTRATION PURPOSE (Authority only)
+    * ///////////////////////////////////////////////////////////////////////
+    */
+    function addPatient(uint _id, string memory _name, address _account, string memory _pKey) public onlyAuthority {
+        (, bool exist) = checkPatient(_id, _account);
+        require(exist==false, "patient id or account already exist !!");
+
+        patients.push(patient(_id, _name, _account, new EHR(), _pKey));
     }
 
-    function getEHRbyActor(uint _patientID, uint _requestID, uint _ehrID) view public returns (uint, string memory, string memory, string memory) {
-        // check if patient exist 
-        (uint index, bool exist) = checkPatient(_patientID, address(0));
-        require(exist, "patient does not exist !!");
+    function rmPatient(uint _id) public onlyAuthority{
+        (uint index, bool exist) = checkPatient(_id, address(0));
+        require(exist==true, "patient does not exist !!");
 
-        // check if actor exist and get the actor id
-        uint actorID = actor.getActorID(msg.sender);
-
-        EHR.EHRAbstract memory temp = patients[index].ehr.getEHRbyActor(_requestID, actorID, _ehrID);
-
-        return (temp.actorID, temp.ehrHash, temp.ipfsHashAddress, temp.secretKey);
-    }   
-
-
+        patients[index] = patients[patients.length-1];
+        patients.pop();
+    }
 }

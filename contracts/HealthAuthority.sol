@@ -25,7 +25,7 @@ contract HealthAuthority {
     ///////////////////////////////////////////////////////////////////////////
 
     // modifier to check if caller is account in authorty
-    modifier isAccount() {
+    modifier onlyAuthority() {
         (uint index, bool exist) = checkHealthAuthority(msg.sender);
         require(exist, "Caller have not permession");
         _;
@@ -53,7 +53,7 @@ contract HealthAuthority {
     * @dev add new account to authority
     * @param _address address to added
     */
-    function addAccount(address _address) public isAccount {
+    function addAccount(address _address) public onlyAuthority {
         authCount++;
         authorities[authCount] = _address;
     }
@@ -62,7 +62,7 @@ contract HealthAuthority {
     * @dev remove account from authority
     * @param _address address to remove
     */
-    function rmAccount(address _address) public isAccount {
+    function rmAccount(address _address) public onlyAuthority {
         (uint index, bool exist) = checkHealthAuthority(_address);
         require(exist==true, "center does not exist !!");
 
