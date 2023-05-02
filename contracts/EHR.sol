@@ -33,12 +33,12 @@ contract EHR {
     }
     struct EHRAbstract {
         // uint id; index in the array of EHRAbstract
+        string title;
+        uint256 date;
         uint actorID;
-        // EHRType eType;
         string ehrHash;
         string ipfsHashAddress;
         string secretKey;
-        // uint date; // TODO
     }
     // EHRAbstract[] ehrArray;
     mapping(uint256 => EHRAbstract) public ehrArray;
@@ -47,7 +47,7 @@ contract EHR {
     
     constructor () {
         ehrCount++;
-        ehrArray[ehrCount] = EHRAbstract(0, "test", "Hello world", "test");
+        ehrArray[ehrCount] = EHRAbstract("test_title", block.timestamp, 23, "test", "Hello world", "test");
 
         requests.push(request(23, block.timestamp, RequestType.CONSULT, RequestState.PENDING));
         // requests.push(request(25, block.timestamp, RequestType.CONSULT, RequestState.ACCEPTED));
@@ -61,14 +61,15 @@ contract EHR {
     */
     
     function checkExpiredRequests() internal {
-        for (uint i=0; i<requests.length;i++)
-        if (requests[i].state == RequestState.PENDING) {
-            uint256 currentTimestamp = block.timestamp;
-            uint256 timeDifference = currentTimestamp - requests[i].timestamp;
-            if (timeDifference > EXPIRED_TIME){
-                requests[i].state = RequestState.CANCELLED;
+        for (uint i=0; i<requests.length;i++) {
+            if (requests[i].state == RequestState.PENDING) {
+                uint256 currentTimestamp = block.timestamp;
+                uint256 timeDifference = currentTimestamp - requests[i].timestamp;
+                if (timeDifference > EXPIRED_TIME){
+                    requests[i].state = RequestState.CANCELLED;
+                }
             }
-        }
+        }     
     }
 
     // #### for patient utilization ###
@@ -96,11 +97,11 @@ contract EHR {
         return index;
     }
 
-    function checkResponse(uint _actorID) public view returns (RequestState, uint) {
+    function checkResponse(uint _actorID, RequestType _type) public view returns (RequestState, uint) {
         uint256 currentTimestamp = block.timestamp;
         uint i = requests.length;
         for (i; i>0; i--) {
-            if (requests[i-1].actorID == _actorID) {
+            if (requests[i-1].actorID == _actorID && requests[i-1].rType == _type) {
                 uint256 timeDifference = currentTimestamp - requests[i-1].timestamp;
                 if (timeDifference > EXPIRED_TIME){ // CANCELLED
                     return (RequestState.CANCELLED, 0);
@@ -142,7 +143,7 @@ contract EHR {
     } 
 
     ////////////////////// FOR ACTOR
-    function addEHRAbstract(uint _requestID, uint _actorID, string memory _hash, string memory _ipfsAddr, string memory _secretKey ) public returns (uint _ehrID) {
+    function addEHRAbstract(uint _requestID, string memory _title, uint _actorID, string memory _hash, string memory _ipfsAddr, string memory _secretKey) public returns (uint _ehrID) {
 
         // 1 - check the request 
         (bool exist, bool accepted) = checkRequest(_requestID);
@@ -157,7 +158,7 @@ contract EHR {
 
         // share the EHR
         ehrCount++;
-        ehrArray[ehrCount] = EHRAbstract(_actorID, _hash, _ipfsAddr, _secretKey);
+        ehrArray[ehrCount] = EHRAbstract(_title, block.timestamp, _actorID, _hash, _ipfsAddr, _secretKey);
 
         return ehrCount;
     }

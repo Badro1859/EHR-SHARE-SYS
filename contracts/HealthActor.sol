@@ -91,5 +91,16 @@ contract HealthActor is HealthCenter {
 
         return actors[index];
     }
+
+    // return actor and center name 
+    function getActorAndCenterName(uint _actorID) public view returns(string memory, string memory) {
+        // get actor name and center id
+        uint index = checkHealthActor(_actorID, address(0));
+        actor memory tmp = actors[index];
+        //get center name
+        (uint c_index, ) = checkHealthCenter(tmp.centerID, address(0));
+        (, string memory centerName,) = getCenterByIndex(c_index);
+        return (tmp.name, centerName);
+    }
     
 }

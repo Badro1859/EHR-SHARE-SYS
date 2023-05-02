@@ -35,7 +35,7 @@ contract HealthCenter {
         centers.push(center(11, 'my center', address(0x0)));
     }
 
-    function checkHealthCenter(uint _id, address _address)  view internal returns (uint, bool) {
+    function checkHealthCenter(uint _id, address _address) view public returns (uint, bool) {
         uint index = 0;
         bool exist = false;
         for (uint i = 0; i < centers.length ; i++){
