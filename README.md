@@ -45,3 +45,10 @@ System to share Electronic Health Record using Etherum Blockchain
             New RPC URL: http://localhost:7545 (assuming Ganache is running on the default port)
         Click "Save" to connect Metamask to your local Ganache blockchain.
 
+#### step 4: deploy smart contract
+    `truffle migrate --reset`
+
+#### step 5: run a client web app:
+    `cd client`
+    `npm install`
+    `npm run dev`
