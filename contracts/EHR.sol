@@ -46,10 +46,10 @@ contract EHR {
 
     
     constructor () {
-        ehrCount++;
-        ehrArray[ehrCount] = EHRAbstract("test_title", block.timestamp, 23, "test", "Hello world", "test");
+        // ehrCount++;
+        // ehrArray[ehrCount] = EHRAbstract("test_title", block.timestamp, 23, "test", "Hello world", "test");
 
-        requests.push(request(23, block.timestamp, RequestType.CONSULT, RequestState.PENDING));
+        // requests.push(request(23, block.timestamp, RequestType.CONSULT, RequestState.PENDING));
         // requests.push(request(25, block.timestamp, RequestType.CONSULT, RequestState.ACCEPTED));
     }
 
