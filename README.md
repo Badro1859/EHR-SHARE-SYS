@@ -5,28 +5,28 @@ System to share Electronic Health Record using Etherum Blockchain
 
 ###### step 1: install requirement
 ###### 1 - Update Package Manager:
-    ```sudo apt update```
+    sudo apt update
 
 ###### 2 - Install Node.js and npm:
-    ```sudo apt get install nodejs npm```
+    sudo apt get install nodejs npm
 
 ###### 3 - Verify the Installation:
-    ```node --version```
-    ```npm --version```
+    node --version
+    npm --version
 
 ###### 4 - Install Truffle and verify it:
-    ```sudo npm install -g truffle```
-    ```truffle version```
+    sudo npm install -g truffle
+    truffle version
 
 #### step 2: install ganache
 ###### 1 - Download Ganache:
     from : https://trufflesuite.com/ganache/
 
 ###### 2 - Install Ganache:
-    ```chmod +x ganache-<version>.AppImage```
+    chmod +x ganache-<version>.AppImage
 
 ###### 3 - Run Ganache:
-    ```./ganache-<version>.AppImage```
+    ./ganache-<version>.AppImage
 
 #### step 3: install metamask
 ###### 1 - Install the Metamask browser extension:
@@ -49,9 +49,9 @@ System to share Electronic Health Record using Etherum Blockchain
         Click "Save" to connect Metamask to your local Ganache blockchain.
 
 #### step 4: deploy smart contract
-    ```truffle migrate --reset```
+    truffle migrate --reset
 
 #### step 5: run a client web app:
-    ```cd client```
-    ```npm install```
-    ```npm run dev```
+    cd client
+    npm install
+    npm run dev
