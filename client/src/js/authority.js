@@ -79,7 +79,11 @@ App = {
     App.setLoading(true);
 
     // Render Account
-    $('#account').html(App.account);
+    if (App.account === undefined) {
+      $('#account').html("NOT CONNECTED !!");
+    } else {
+      $('#account').html(App.account);
+    }
 
     // Render Authority Accounts
     await App.renderAuthList();
@@ -230,6 +234,7 @@ App = {
       $newActorRow.find('.actCentID').html(actor[1].toNumber())
       $newActorRow.find('.actName').html(actor[2])
       $newActorRow.find('.actAccount').html(actor[3])
+      // $newActorRow.find('.actPubKey').html(actor[4])
       $newActorRow.find('button')
                       .prop('name', actor[0].toNumber())
                       .on('click', App.deleteActor)
@@ -248,7 +253,8 @@ App = {
     const name = $('#inputActorName').val();
     const centerID = $('#inputActorCenter').val();
     const account = $('#inputActorAddr').val();
-    await App.actor.addHealthActor(identifier,centerID, name, account);
+    const publicKey = "default_Pub_Key";
+    await App.actor.addHealthActor(identifier,centerID, name, account, publicKey);
     window.location.reload()
   },
 
@@ -289,6 +295,7 @@ App = {
       $newPatientRow.find('.patID').html(patient[0].toNumber())
       $newPatientRow.find('.patName').html(patient[1])
       $newPatientRow.find('.patAddr').html(patient[2])
+      // $newPatientRow.find('.patPubKey').html(patient[3])
       $newPatientRow.find('button')
                       .prop('name', patient[0].toNumber())
                       .on('click', App.deletePatient)
@@ -306,7 +313,8 @@ App = {
     const identifier = $('#inputPatIdent').val();
     const name = $('#inputPatName').val();
     const account = $('#inputPatAddr').val();
-    await App.patient.addPatient(identifier, name, account);
+    const publicKey = "default_Pub_Key";
+    await App.patient.addPatient(identifier, name, account, publicKey);
     window.location.reload()
   },
 
@@ -316,8 +324,6 @@ App = {
     await App.patient.rmPatient(patID);
     window.location.reload();
   },
-
-
 }
   
 $(() => {

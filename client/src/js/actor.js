@@ -1,6 +1,3 @@
-
-
-
 App = {
     loading: false,
     contracts: {},
@@ -17,7 +14,6 @@ App = {
         content.show()
       }
     },
-  
   
     //////////////////// WEB3 PURPOSES ////////////////////
     load: async () => {
@@ -75,9 +71,13 @@ App = {
   
       // Update app loading state
       App.setLoading(true);
-  
+      
       // Render Account
-      $('#account').html(App.account);
+      if (App.account === undefined) {
+        $('#account').html("NOT Connected !!");
+      } else {
+        $('#account').html(App.account);
+      }
    
       // Update loading state
       App.setLoading(false);
@@ -93,44 +93,60 @@ App = {
     },
 
     shareEHR: async () => {
+
       const patID = $('#inputPatID').val();
+      const title = $('#inputTitle').val();
       const reqID = $('#inputReqID').val();
       const hash = $('#inputHash').val();
       const ipfs = $('#inputipfs').val();
       const secret = $('#inputSecKey').val();
 
-      await App.patient.shareEHR(patID, reqID, hash, ipfs, secret);
-      window.location.reload();
+      try {
+        await App.patient.shareEHR(patID, reqID, title, hash, ipfs, secret);
+        window.location.reload();
+      }
+      catch {
+        console.alert("ERROR IN SHARING !! TRY AGAIN");
+      }
+      
     },
 
     consultEHR: async () => {
       const patID = $('#inputpat').val();
-      const reqID = $('#inputreq').val();
 
       // Load the total ehr count from the blockchain
-      const ehrCount = await App.patient.getNbOfEHRByActor(patID);
+      const ehrCount = await App.patient.getNbOfEHR(patID);
       const $ehrRow = $('.ehrRow');
       
+      console.log(ehrCount.toNumber())
       // Render out each request with a new task template
       for (var i = 1; i <= ehrCount.toNumber(); i++) {
         // Fetch the authority address from the blockchain
-        const ehr = await App.patient.getEHRbyActor(patID, reqID, i);
+        try {
+          const ehr = await App.patient.getEHR(i, patID);
+          // Create the html for the authority
+          const $newEhrRow = $ehrRow.clone()
 
-        // Create the html for the authority
-        const $newEhrRow = $ehrRow.clone()
+          $newEhrRow.find('.ehrID').html(i);
+          $newEhrRow.find('.ehrTitle').html(ehr[0]);
+          $newEhrRow.find('.ehrDate').html(ehr[1].toNumber());
+          $newEhrRow.find('.ehrActor').html(ehr[2]);
+          $newEhrRow.find('.ehrCenter').html(ehr[3]);
+          $newEhrRow.find('.ehrHash').html(ehr[4]);
+          $newEhrRow.find('.ehrIPFS').html(ehr[5]);
+          $newEhrRow.find('.ehrSecKey').html(ehr[6]);
 
-        $newEhrRow.find('.ehrID').html(i);
-        $newEhrRow.find('.ehrActor').html(ehr[0].toNumber());
-        $newEhrRow.find('.ehrHash').html(ehr[1]);
-        $newEhrRow.find('.ehrIPFS').html(ehr[2]);
-        $newEhrRow.find('.ehrSecKey').html(ehr[3]);
 
+          // Put the authority in the list
+          $('#ehrList').append($newEhrRow)
 
-        // Put the authority in the list
-        $('#ehrList').append($newEhrRow)
-
-        // Show the task
-        $newEhrRow.show()
+          // Show the task
+          $newEhrRow.show()
+        }
+        catch {
+          console.log("error")
+          window.alert("ERROR WHEN CONSULTING !! TRY AGAIN")
+        }
       }
 
     }

@@ -22,10 +22,10 @@ contract HealthActor is HealthCenter {
     uint256 public actorCount = 0; // pointer in the last element in the map
 
     constructor (address authorityAddress) HealthCenter(authorityAddress){
-        actorCount++;
-        actors[actorCount] = actor(23, 11, "badro", address(0x6158ca8d2F4D51a88207C87c495E31079cb01c02), "test_public_key");
-        actorCount++;
-        actors[actorCount] = actor(25, 11, "bilal", address(0x275e9114f18A7751af2E743e181a50525af1b08a), "test_public_key");
+        // actorCount++;
+        // actors[actorCount] = actor(23, 11, "badro", address(0x6158ca8d2F4D51a88207C87c495E31079cb01c02), "test_public_key");
+        // actorCount++;
+        // actors[actorCount] = actor(25, 11, "bilal", address(0x275e9114f18A7751af2E743e181a50525af1b08a), "test_public_key");
     }
 
     function char(bytes1 b) internal pure returns (bytes1 c) {

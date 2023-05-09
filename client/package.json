@@ -23,6 +23,7 @@
     "truffle-contract": "3.0.6"
   },
   "dependencies": {
+    "jquery": "^1.12.4",
     "keythereum": "^2.0.0",
     "web3-eth-accounts": "^1.9.0"
   }

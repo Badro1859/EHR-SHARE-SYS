@@ -76,7 +76,12 @@ App = {
     App.setLoading(true);
 
     // Render Account
-    $('#account').html(App.account);
+    if (App.account !== undefined) {
+      $('#account').html(App.account);
+    } else {
+      $('#account').html("NO CONNECTION !!");
+    }
+    
 
     // get all EHR
     await App.renderEHR();
@@ -103,15 +108,18 @@ App = {
         const $newReqRow = $reqRow.clone()
 
         $newReqRow.find('.reqIndex').html(i);
-        $newReqRow.find('.reqActor').html(req[0].toNumber());
+        $newReqRow.find('.reqActor').html(req[0]);
+        $newReqRow.find('.reqDate').html(req[1].toNumber());
         let type = "CONSULT";
-        if(req[1].toNumber() === 0){
+        if(req[2].toNumber() === 0){
             type = "SHARE";
         }
         $newReqRow.find('.reqType').html(type);
+        $newReqRow.find('.reqState').html(req[3].toNumber());
+        $newReqRow.find('.reqCenter').html(req[4]);
         let btn = $newReqRow.find('button')
                             .prop('name', i)
-        if (req[2]) {
+        if (req[3].toNumber() !== 2) {
             btn.prop('disabled', true).html('Accepted');
         } else {
             btn.on('click', App.acceptRequest);
@@ -127,28 +135,31 @@ App = {
 
   acceptRequest: async (event) => {
       const reqID = event.target.name;
-      await App.patient.setResponse(reqID);
+      await App.patient.setResponse(reqID, 0);
       window.location.reload()
   },
 
   renderEHR: async () => {
     // Load the total ehr count from the blockchain
-    const ehrCount = await App.patient.getNbOfEHRByOwner();
+    const ehrCount = await App.patient.getNbOfEHR(0);
     const $ehrRow = $('.ehrRow');
-    
+    console.log(ehrCount)
     // Render out each request with a new task template
     for (var i = 1; i <= ehrCount.toNumber(); i++) {
         // Fetch the authority address from the blockchain
-        const ehr = await App.patient.getEHRbyOwner(i);
+        const ehr = await App.patient.getEHR(i, 0);
 
         // Create the html for the authority
         const $newEhrRow = $ehrRow.clone()
 
         $newEhrRow.find('.ehrID').html(i);
-        $newEhrRow.find('.ehrActor').html(ehr[0].toNumber());
-        $newEhrRow.find('.ehrHash').html(ehr[1]);
-        $newEhrRow.find('.ehrIPFS').html(ehr[2]);
-        $newEhrRow.find('.ehrSecKey').html(ehr[3]);
+        $newEhrRow.find('.ehrTitle').html(ehr[0]);
+        $newEhrRow.find('.date').html(ehr[1].toNumber());
+        $newEhrRow.find('.ehrActor').html(ehr[2]);
+        $newEhrRow.find('.ehrCenter').html(ehr[3]);
+        $newEhrRow.find('.ehrHash').html(ehr[4]);
+        $newEhrRow.find('.ehrIPFS').html(ehr[5]);
+        $newEhrRow.find('.ehrSecKey').html(ehr[6]);
 
 
         // Put the authority in the list

@@ -31,8 +31,7 @@ contract HealthCenter {
 
     constructor(address AuthorityAddress) {
         authority = HealthAuthority(AuthorityAddress);
-
-        centers.push(center(11, 'my center', address(0x0)));
+        // centers.push(center(11, 'my center', address(0x0)));
     }
 
     function checkHealthCenter(uint _id, address _address) view public returns (uint, bool) {

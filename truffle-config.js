@@ -66,9 +66,9 @@ module.exports = {
     //
     development: { // truffle deploy --compile-none
      host: "localhost",     // Localhost (default: none)
-     port: 8501,            // Standard Ethereum port (default: none)
-     network_id: "1214",       // Any network (default: none)
-     gasPrice: 20000000000,
+     port: 8585,            // Standard Ethereum port (default: none)
+     network_id: "*",       // Any network (default: none)
+    //  gasPrice: 20000000000,
     //  from: "0x7bd20cf7a890c8eac5134d834a47787a6f563fe1",
     },
     //
