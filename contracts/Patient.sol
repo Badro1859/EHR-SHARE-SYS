@@ -34,9 +34,6 @@ contract Patient {
     constructor(address authorityAddress, address actorAddress){
         authority = HealthAuthority(authorityAddress);
         actor = HealthActor(actorAddress);
-
-        // patients.push(patient(20, 'badro', address(0x87C8Ea2F6EF914766609df6C776e65b191F97EF8), new EHR(), "public_key"));
-        // patients.push(patient(25, 'bilal', address(0xDb4454a0Ff6c7eBeAD241de2432D68648f4b2ff5), new EHR(), "public_key"));
     }
 
     /**
